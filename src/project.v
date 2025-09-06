@@ -29,7 +29,7 @@ module tt_um_mod6_counter (
   end
 
   // Assign counter value to output bits [2:0], others set to 0
-  assign uo_out  = {5'b00000, counter};
+  assign uo_out = 8'd50;
   assign uio_out = 8'b0;
   assign uio_oe  = 8'b0;
 
