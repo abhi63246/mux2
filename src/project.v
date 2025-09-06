@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_example (
+module tt_um_mod6_counter (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -16,14 +16,24 @@ module tt_um_example (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+  // 3-bit Mod-6 counter (counts 0 to 5)
+  reg [2:0] counter;
 
-    
+  always @(posedge clk) begin
+    if (!rst_n)
+      counter <= 3'd0;                    // Async reset (active low)
+    else if (counter == 3'd5)
+      counter <= 3'd0;                    // Reset after reaching 5
+    else
+      counter <= counter + 1'b1;          // Increment
+  end
+
+  // Assign counter value to output bits [2:0], others set to 0
+  assign uo_out  = {5'b00000, counter};
+  assign uio_out = 8'b0;
+  assign uio_oe  = 8'b0;
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+  wire _unused = &{ui_in, uio_in, ena};
 
 endmodule
