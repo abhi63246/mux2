@@ -20,21 +20,16 @@ async def test_project(dut):
     dut.ui_in.value = 0
     dut.uio_in.value = 0
     dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
+    await ClockCycles(dut.clk, 5)
     dut.rst_n.value = 1
 
     dut._log.info("Test project behavior")
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+    # Check the counter counts from 0 to 5 and wraps around
+    expected_sequence = [0, 1, 2, 3, 4, 5, 0, 1]
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
-
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
-
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    for i, expected in enumerate(expected_sequence):
+        await ClockCycles(dut.clk, 1)
+        actual = dut.uo_out.value.integer & 0b111  # Only use lower 3 bits
+        dut._log.info(f"Cycle {i}: uo_out = {actual}, expected = {expected}")
+        assert actual == expected, f"Cycle {i}: Expected {expected}, got {actual}"
