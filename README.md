@@ -1,41 +1,71 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# Mod-6 Counter (TinyTapeout Project)
 
-- [Read the documentation for project](docs/info.md)
+## Design Name
+**3-bit Mod-6 Counter**
 
-## What is Tiny Tapeout?
+---
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+## Working
+This project implements a **synchronous 3-bit Modulo-6 counter**.  
+- The counter increments on each **rising edge** of the clock (`clk`).  
+- When the counter reaches **5 (`101`)**, it wraps back to **0** on the next clock cycle.  
+- An **active-low reset (`rst_n`)** resets the counter to 0.  
+- The output is connected to the **TinyTapeout user outputs (`uo_out[2:0]`)**, while unused IOs are tied low.
 
-To learn more and get started, visit https://tinytapeout.com.
+---
 
-## Set up your Verilog project
+## Waveform
+Example simulation waveform:
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
 
-The GitHub action will automatically build the ASIC files using [OpenLane](https://www.zerotoasiccourse.com/terminology/openlane/).
+*(You can generate and view this waveform using GTKWave with the provided testbench.)*
 
-## Enable GitHub actions to build the results page
+---
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+## Block Diagram
+     +-------------------------+
+clk --->| |
+rst_n -->| 3-bit Counter (Mod-6) |---> uo_out[2:0]
+| |
++-------------------------+
 
-## Resources
+---
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
+## IO’s
 
-## What next?
+| Signal        | Direction | Width | Description                                |
+|---------------|-----------|-------|--------------------------------------------|
+| `clk`         | Input     | 1     | Clock signal                               |
+| `rst_n`       | Input     | 1     | Active-low reset (synchronous)             |
+| `ena`         | Input     | 1     | Enable signal (from TinyTapeout harness)   |
+| `ui_in`       | Input     | 8     | Unused (set to 0)                          |
+| `uio_in`      | Input     | 8     | Unused                                     |
+| `uio_out`     | Output    | 8     | Unused                                     |
+| `uio_oe`      | Output    | 8     | Unused                                     |
+| `uo_out[2:0]` | Output    | 3     | Counter output (binary value 0–5)          |
+| `uo_out[7:3]` | Output    | 5     | Unused (set to 0)                          |
 
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
+---
+
+## How to Test
+1. **Simulation:**
+   - Run the testbench (`tb.v`) in a Verilog simulator (Icarus, Verilator, etc.).
+   - Open the output VCD file in GTKWave.
+   - Verify that the output counts `0 → 5 → 0`.
+
+2. **On TinyTapeout Hardware:**
+   - Apply a clock signal to `clk`.
+   - Keep `rst_n = 1` to allow counting.
+   - Observe the counter output on `uo_out[2:0]` (can connect LEDs).
+
+---
+
+## External Hardware
+- **None required.**  
+- Optional:  
+  - **3 LEDs** on `uo_out[2:0]` to visualize the count.  
+  - Logic analyzer to capture output transitions.
+
+---
